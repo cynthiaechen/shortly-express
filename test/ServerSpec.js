@@ -59,9 +59,10 @@ describe('', function() {
       });
   });
 
+var requestWithSession = request.defaults({jar: true});
   describe('Link creation:', function(){
 
-    var requestWithSession = request.defaults({jar: true});
+    // var requestWithSession = request.defaults({jar: true});
 
 var xbeforeEach = function(){};
       // create a user that we can then log-in with
@@ -84,7 +85,7 @@ var xbeforeEach = function(){};
         });
       });
     });
-
+    //TEST PASSED
     it('Only shortens valid urls, returning a 404 - Not found for invalid urls', function(done) {
       var options = {
         'method': 'POST',
@@ -96,11 +97,12 @@ var xbeforeEach = function(){};
 
       requestWithSession(options, function(error, res, body) {
         // res comes from the request module, and may not follow express conventions
+    
         expect(res.statusCode).to.equal(404);
         done();
       });
     });
-
+    
     describe('Shortening links:', function(){
 
       var options = {
@@ -111,7 +113,7 @@ var xbeforeEach = function(){};
           'url': 'http://roflzoo.com/'
         }
       };
-
+      //TEST PASSED
       it('Responds with the short code', function(done) {
         requestWithSession(options, function(error, res, body) {
           expect(res.body.url).to.equal('http://roflzoo.com/');
@@ -119,7 +121,7 @@ var xbeforeEach = function(){};
           done();
         });
       });
-
+      //TEST PASSED
       it('New links create a database entry', function(done) {
         requestWithSession(options, function(error, res, body) {
           db.knex('urls')
@@ -133,7 +135,7 @@ var xbeforeEach = function(){};
             });
         });
       });
-
+      //TEST PASSED
       it('Fetches the link url title', function (done) {
         requestWithSession(options, function(error, res, body) {
           db.knex('urls')
@@ -165,7 +167,7 @@ var xbeforeEach = function(){};
           done();
         });
       });
-
+      //TEST PASSED
       it('Returns the same shortened code', function(done) {
         var options = {
           'method': 'POST',
@@ -182,7 +184,7 @@ var xbeforeEach = function(){};
           done();
         });
       });
-
+      //TEST PASSED
       it('Shortcode redirects to correct url', function(done) {
         var options = {
           'method': 'GET',
@@ -195,7 +197,7 @@ var xbeforeEach = function(){};
           done();
         });
       });
-
+      //TEST PASSED
       it('Returns all of the links to display on the links page', function(done) {
         var options = {
           'method': 'GET',
@@ -238,7 +240,7 @@ var xbeforeEach = function(){};
 
   }); // 'Priviledged Access'
 
-  xdescribe('Account Creation:', function(){
+  describe('Account Creation:', function(){
 
     it('Signup creates a user record', function(done) {
       var options = {
@@ -333,4 +335,3 @@ var xbeforeEach = function(){};
 
   }); // 'Account Login'
 
-});

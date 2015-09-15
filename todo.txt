@@ -1,0 +1,33 @@
+Save username and passwords
+Save how many times a url has been visited in db
+Save shortened url in db
+We will need to handle routing for home page, login, improper login and url does not exist
+Implement secure password storage and lookup
+Create sessions
+Make tests pass, uncomment xdescribe
+Add tests for authentication if necessary
+Create a new table users with columns username and password. How to store them securely? What models and what behavior do they encapsulate ie. what methods do they have?
+Allow users to register for new account or to login - build pages for login and sign up. Add routes to process the form data POST actions
+Add a checkUser helper to all server routes that require login, redirect the user to a login page as needed. Require users to log in to see shortened links and create new ones. Do NOT require the user to login when using a previously shortened link.
+Enable sessions so that the user does not need to keep logging in when reloading the page.
+Don't forget to give the user a way to log out!
+Line 99 Spec: // res comes from the request module, and may not follow express conventions
+Move this line to global scope: // var requestWithSession = request.defaults({jar: true});
+Uncomments lines 42, 54, 16 when running authentication tests
+
+TESTS
+DONE - Shortening links:
+DONE - 'Responds with the short code'
+DONE - 'New links create a database entry'
+DONE - 'Fetches the link url title'
+DONE - 'With previously saved urls:'
+DONE - 'Returns the same shortened code'
+DONE - 'Shortcode redirects to correct url'
+DONE - 'Returns all of the links to display on the links page'
+'Redirects to login page if a user tries to access the main page and is not signed in'
+'Redirects to login page if a user tries to create a link and is not signed in'
+'Redirects to login page if a user tries to see all of the links and is not signed in'
+'Signup creates a user record'
+'Signup logs in a new user'
+'Logs in existing users'
+'Users that do not exist are kept on login page'

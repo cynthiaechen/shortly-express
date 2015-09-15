@@ -22,23 +22,48 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
-
+//ADD CALLBACK TO SEE IF AUTHENTICATED AND THEN REDIRECT ACCORDINGLY
 app.get('/', 
 function(req, res) {
-  res.render('index');
+  res.redirect('/login');
+  // res.render('index');
 });
-
+//ADD CALLBACK TO SEE IF AUTHENTICATED AND THEN REDIRECT ACCORDINGLY
 app.get('/create', 
 function(req, res) {
-  res.render('index');
+  res.redirect('/login');
+  // res.render('index');
 });
-
+//ADD CALLBACK TO SEE IF AUTHENTICATED AND THEN REDIRECT ACCORDINGLY
+//Robert: Sends back all link models data array of objects probably a json file
 app.get('/links', 
 function(req, res) {
+//WHAT ARE THE RESET METHOD AND FETCH METHOD DOING HERE?
+  // res.redirect('/login');
   Links.reset().fetch().then(function(links) {
     res.send(200, links.models);
   });
 });
+
+app.get('/login', 
+function(req, res) {
+  res.render('login');
+});
+
+app.get('/signup',
+  function(req,res) {
+    res.render('signup');
+  });
+
+app.post('/signup', 
+function(req, res) {
+  console.log(db.knex.column('username').select().from('users'));
+  //console.log(db.knex.select().table('users'););
+  //db.knex('users')
+  //db.knex('users').insert({username: req.body.username, password: req.body.password});
+  //console.log(db.knex.select().from('users'));
+  });
+
 
 app.post('/links', 
 function(req, res) {
@@ -48,6 +73,7 @@ function(req, res) {
     console.log('Not a valid url: ', uri);
     return res.send(404);
   }
+//CREATES A NEW LINK MODEL IF VALID URL AND PASSES IN THE REQ.BODY.URL. CHECKS IF THE URL EXISTS AND IF IT DOES SEND IT IN RESPONSE (found.attributes)
 
   new Link({ url: uri }).fetch().then(function(found) {
     if (found) {
@@ -58,6 +84,7 @@ function(req, res) {
           console.log('Error reading URL heading: ', err);
           return res.send(404);
         }
+//CREATE A NEW LINK MODEL FROM THE COLLECTION WITH THE REQUEST.BODY.URL
 
         Links.create({
           url: uri,
@@ -84,15 +111,19 @@ function(req, res) {
 // If the short-code doesn't exist, send the user to '/'
 /************************************************************/
 
+//ANY GET REQUEST WILL CREATE A NEW LINK MODEL FROM THE REQ PARAMS AT INDEX 0. IF NOT A LINK THEN RETURN USER TO THE HOME PAGE
+
 app.get('/*', function(req, res) {
   new Link({ code: req.params[0] }).fetch().then(function(link) {
     if (!link) {
       res.redirect('/');
     } else {
+      //CREATING A NEW CLICK MODEL AND ASSIGNING THE LINK_ID TO THE ID OF THE LINK
       var click = new Click({
         link_id: link.get('id')
       });
-
+      //INVOKES SAVE METHOD OF CLICK AND INCREMENTS VISIT COUNT FOR THAT LINK 
+      //WHAT DOES THE REDIRECT METHOD DO EXACTLY?
       click.save().then(function() {
         link.set('visits', link.get('visits')+1);
         link.save().then(function() {
@@ -103,5 +134,6 @@ app.get('/*', function(req, res) {
   });
 });
 
+//SERVER LISTENING ON PORT 4568, MOST LIKELY AT IP 127.0.0.1
 console.log('Shortly is listening on 4568');
 app.listen(4568);
