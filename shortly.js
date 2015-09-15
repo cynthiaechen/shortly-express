@@ -57,11 +57,13 @@ app.get('/signup',
 
 app.post('/signup', 
 function(req, res) {
-  console.log(db.knex.column('username').select().from('users'));
-  //console.log(db.knex.select().table('users'););
-  //db.knex('users')
-  //db.knex('users').insert({username: req.body.username, password: req.body.password});
-  //console.log(db.knex.select().from('users'));
+  var newUser = new User({
+    username : req.body.username,
+    password: '',
+    salt: ''
+  });
+  util.saltNHash(newUser, req.body.password);
+  //Add new user to db
   });
 
 
