@@ -3,6 +3,7 @@ var util = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
 var bcrypt = require('bcrypt-nodejs');
+var session = require('express-session');
 
 var db = require('./app/config');
 var Users = require('./app/collections/users');
@@ -10,6 +11,7 @@ var User = require('./app/models/user');
 var Links = require('./app/collections/links');
 var Link = require('./app/models/link');
 var Click = require('./app/models/click');
+var uuid = require('uuid');
 
 var app = express();
 
@@ -22,9 +24,15 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
+app.use(session({
+  secret: 'ella fitzgerald'
+}));
+
+
 //ADD CALLBACK TO SEE IF AUTHENTICATED AND THEN REDIRECT ACCORDINGLY
-app.get('/', 
+app.get('/',
 function(req, res) {
+  console.log(req);
   res.redirect('/login');
   // res.render('index');
 });
@@ -58,7 +66,8 @@ app.post('/login', function(req, res) {
     var isPasswordCorrect;
     util.checkPassword(loginUser, req.body.password, function(isPasswordCorrect) {
       if (isPasswordCorrect) {
-        console.log('this works!');
+        req.session.user = loginUser;
+        console.log(req.session.user);
         res.render('index');
       } else {
         res.end('Incorrect Password');
@@ -89,6 +98,7 @@ function(req, res) {
     util.saltNHash(newUser, req.body.password);
     Users.add(newUser);
     //Add new user to db
+    req.session.user = newUser;
     res.writeHead(201, {'Content-Type': 'text/html'});
     res.end();
   } else {
