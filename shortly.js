@@ -60,10 +60,16 @@ function(req, res) {
   var newUser = new User({
     username : req.body.username,
     password: '',
-    salt: ''
+    salt: '',
+    tableName: 'users'
   });
+  //??ARE WE SETTING THE ATTRIBUTES CORRECTLY ON THE mODEL
   util.saltNHash(newUser, req.body.password);
+  Users.add(newUser);
+  console.log(Users.models);
   //Add new user to db
+  res.writeHead(201, {'Content-Type': 'text/html'});
+  res.end();
   });
 
 
