@@ -2,7 +2,7 @@ var express = require('express');
 var util = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
-
+var bcrypt = require('bcrypt-nodejs');
 
 var db = require('./app/config');
 var Users = require('./app/collections/users');
@@ -50,6 +50,27 @@ function(req, res) {
   res.render('login');
 });
 
+app.post('/login', function(req, res) {
+    //select model where username === req.body.username
+    console.log('-----------------------------------------------!!!!');
+  var loginUser = Users.findWhere({'username': req.body.username});
+  if(loginUser) {
+    var isPasswordCorrect;
+    util.checkPassword(loginUser, req.body.password, function(isPasswordCorrect) {
+      if (isPasswordCorrect) {
+        console.log('this works!');
+        res.render('index');
+      } else {
+        res.end('Incorrect Password');
+        // res.redirect('/login');
+      }
+    });
+  }
+  //use bcrypt.compare (req.body.password, model.password, function(err,res) {})
+  //if (res), then redirect to '/create'
+  //else tell user password is incorrect
+});
+
 app.get('/signup',
   function(req,res) {
     res.render('signup');
@@ -57,21 +78,24 @@ app.get('/signup',
 
 app.post('/signup', 
 function(req, res) {
-  var newUser = new User({
-    username : req.body.username,
-    password: '',
-    salt: '',
-    tableName: 'users'
-  });
-  //??ARE WE SETTING THE ATTRIBUTES CORRECTLY ON THE mODEL
-  util.saltNHash(newUser, req.body.password);
-  Users.add(newUser);
-  console.log(Users.models);
-  //Add new user to db
-  res.writeHead(201, {'Content-Type': 'text/html'});
-  res.end();
-  });
-
+  if(Users.findWhere({'username': req.body.username}) === undefined) {
+    var newUser = new User({
+      username : req.body.username,
+      password: '',
+      salt: '',
+      tableName: 'users'
+    });
+    //??ARE WE SETTING THE ATTRIBUTES CORRECTLY ON THE mODEL
+    util.saltNHash(newUser, req.body.password);
+    Users.add(newUser);
+    //Add new user to db
+    res.writeHead(201, {'Content-Type': 'text/html'});
+    res.end();
+  } else {
+    res.writeHead(422, {'Content-Type': 'text/html'});
+    res.end('username taken');
+  }
+});
 
 app.post('/links', 
 function(req, res) {
